@@ -1,0 +1,33 @@
+.form-signin {
+    max-width: 600px;
+    padding: 25px;
+    padding-top: 10%;
+}
+
+.dataTables_filter,
+.dataTables_length {
+    margin-bottom: 15px;
+}
+
+.dataTables_length label {
+    display: inline-flex;
+}
+
+.dataTables_length label > select {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.dataTables_filter label {
+    width: 100%;
+    display: inline-flex;
+    justify-content: flex-end;
+}
+
+.dataTables_filter label > input {
+    margin-left: 10px;
+}
+
+.pagination {
+    float: right;
+}
