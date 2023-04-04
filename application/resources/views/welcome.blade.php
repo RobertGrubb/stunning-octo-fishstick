@@ -32,14 +32,7 @@
                     <div class="table-responsive-md">
                         <table class="table table-striped" id="datatable">
                             <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th class="text-center">Country</th>
-                                    <th class="text-center">Subscribed Date</th>
-                                    <th class="text-center">Subscribed Time</th>
-                                    <th></th>
-                                </tr>
+
                             </thead>
                             <tbody>
 
@@ -61,8 +54,35 @@ window.onload = function() {
     $.fn.dataTable.ext.errMode = 'throw';
 
     table = $('#datatable').DataTable({
+        processing: true,
+        serverSide: true,
         responsive: true,
         ajax: '/',
+        columns: [{
+                name: 'Name',
+                sortable: false
+            },
+            {
+                name: 'Email',
+                sortable: false
+            },
+            {
+                name: 'Country',
+                sortable: false
+            },
+            {
+                name: 'Subscribe Date',
+                sortable: false
+            },
+            {
+                name: 'Subscribe Time',
+                sortable: false
+            },
+            {
+                name: '',
+                sortable: false
+            },
+        ],
         error: function(jqXHR, ajaxOptions, thrownError) {
             setTimeout(function() {
                 table.ajax.reload();

@@ -632,17 +632,61 @@ class SiteController extends Controller
          */
         if (request()->ajax()) {
 
+            /**
+             * Instantiate the subscribers api client
+             */
             $subscribersApi = (new \MailerLiteApi\MailerLite($mailerApiKey->value))->subscribers();
 
+            /**
+             * Get the filter parameters for DataTables
+             */
+            $offset = $request->query('start');
+            $limit = $request->query('length');
+            $search = $request->query('search');
+
+            // Set filtered to 0 by default
+            $recordsFiltered = 0;
+
+            // Determine if there is a search value
+            $searchValue = $search['value'];
+
+            // Get total of records for mailerlite
+            $recordsTotal = $subscribersApi->count();
+
+            // Begin the querying
+            $subscribersQuery = $subscribersApi
+                ->offset($offset)
+                ->limit($limit);
+
             try {
-                $subscribers = $subscribersApi->get();
+
+                /**
+                 * If there is a search value for id / email,
+                 * then we know that it will return 1 because it will
+                 * be an exact match. We still need to, however, format the
+                 * response in a way that makes sense for datatables.
+                 */
+                if ($searchValue) {
+                    $subscribers = $subscribersQuery->find($searchValue);
+
+                    if (isset($subscribers->error)) {
+                        $subscribers = [];
+                        $recordsFiltered = (object) ['count' => 0];
+                    } else {
+                        $subscribers = [$subscribers];
+                        $recordsFiltered = (object) ['count' => 1];
+                    }
+
+                } else {
+                    $recordsFiltered = $subscribersQuery->count();
+                    $subscribers = $subscribersQuery->get();
+                }
+
             } catch (Exception $e) {
-                return view('error')->with([
-                    'error' => (object) [
-                        'code' => 'Error',
-                        'message' => 'Mailerlite returned "' . $e->getMessage() . '"',
-                    ],
-                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 500);
             }
 
             /**
@@ -657,9 +701,10 @@ class SiteController extends Controller
 
             // If there is an error, display the error page
             if ($error) {
-                return view('error')->with([
-                    'error' => $error,
-                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => $error,
+                ], 500);
             }
 
             $subField = function ($fields, $key) {
@@ -686,7 +731,7 @@ class SiteController extends Controller
                 ];
             }
 
-            return response()->json(['data' => $output]);
+            return response()->json(['success' => true, 'data' => $output, 'recordsFiltered' => (int) $recordsFiltered->count, 'recordsTotal' => (int) $recordsTotal->count]);
         }
 
         return view('welcome')->with([
