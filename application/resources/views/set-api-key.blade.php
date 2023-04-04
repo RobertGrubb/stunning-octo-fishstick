@@ -4,6 +4,10 @@
     <form action="/save" method="POST">
         <h1 class="h3 mb-3 fw-normal">Please provide the following</h1>
 
+        @if (Session::get('error'))
+        <div class="alert alert-danger">{{Session::get('error')}}</div>
+        @endif
+
         <div class="form-floating mb-3">
             <input @if ($key) value="{{$key->value}}" @endif type="text" name="key" class="form-control"
                 id="apiKeyInput" placeholder="Mailerlite API Key">

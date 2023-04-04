@@ -29,21 +29,23 @@
 
             <div class="row pb-5 mb-5 border-bottom">
                 <div class="col-lg-12">
-                    <table class="table table-striped" id="datatable">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th class="text-center">Country</th>
-                                <th class="text-center">Subscribed Date</th>
-                                <th class="text-center">Subscribed Time</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div class="table-responsive-md">
+                        <table class="table table-striped" id="datatable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th class="text-center">Country</th>
+                                    <th class="text-center">Subscribed Date</th>
+                                    <th class="text-center">Subscribed Time</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -53,9 +55,19 @@
 <script>
 var table;
 
+
+
 window.onload = function() {
+    $.fn.dataTable.ext.errMode = 'throw';
+
     table = $('#datatable').DataTable({
+        responsive: true,
         ajax: '/',
+        error: function(jqXHR, ajaxOptions, thrownError) {
+            setTimeout(function() {
+                table.ajax.reload();
+            }, 1000);
+        }
     });
 }
 

@@ -583,13 +583,21 @@ class SiteController extends Controller
         $settings = new \App\Models\Setting();
 
         try {
+            $valid = $this->validMailerKey((object) ['value' => $key]);
+
+            if (!$valid) {
+                return redirect('/change-key')->with('error', 'Invalid API Key');
+            }
+
             $settings::updateOrCreate(
                 ['variable' => 'mailerlite_api_key'],
                 ['value' => $key, 'variable' => 'mailerlite_api_key']
             );
         } catch (Exception $e) {
-            return redirect('/')->with('error', $e->getMessage());
+            return redirect('/change-key')->with('error', $e->getMessage());
         }
+
+        sleep(2);
 
         return redirect('/')->with('message', 'API Key was updated successfully.');
     }
@@ -612,21 +620,18 @@ class SiteController extends Controller
         $mailerApiKey = $settings::where('variable', '=', 'mailerlite_api_key')->first();
 
         if (!$mailerApiKey) {
-            return view('set-api-key', [
-                'key' => $mailerApiKey,
-            ]);
+            return redirect('/change-key');
         }
 
         if (!isset($mailerApiKey->value)) {
-            return view('set-api-key', [
-                'key' => $mailerApiKey,
-            ]);
+            return redirect('/change-key');
         }
 
         /**
          * If this is an AJAX request, process the subscribers here.
          */
         if (request()->ajax()) {
+
             $subscribersApi = (new \MailerLiteApi\MailerLite($mailerApiKey->value))->subscribers();
 
             try {
@@ -673,7 +678,7 @@ class SiteController extends Controller
             foreach ($subscribers as $subscriber) {
                 $output[] = [
                     $subscriber->name,
-                    $subscriber->email,
+                    '<a href="/edit/' . (string) $subscriber->id . '">' . $subscriber->email . '</a>',
                     $subField($subscriber->fields, 'country'),
                     date('d/m/Y', strtotime($subscriber->date_subscribe)),
                     date('H:i:s', strtotime($subscriber->date_subscribe)),
@@ -710,5 +715,21 @@ class SiteController extends Controller
         return view('set-api-key')->with([
             'key' => $mailerApiKey,
         ]);
+    }
+
+    private function validMailerKey($key)
+    {
+        $subscribersApi = (new \MailerLiteApi\MailerLite($key->value))->subscribers();
+        $res = $subscribersApi->find(1);
+
+        if (isset($res->error)) {
+            if (isset($res->error->code)) {
+                if ($res->error->code === 302) {
+                    return false;
+                }
+            }
+        }
+
+        return $subscribersApi;
     }
 }
