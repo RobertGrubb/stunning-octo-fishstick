@@ -32,7 +32,14 @@
                     <div class="table-responsive-md">
                         <table class="table table-striped" id="datatable">
                             <thead>
-
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Country</th>
+                                    <th>Subscribe Date</th>
+                                    <th>Subscribe Time</th>
+                                    <th></th>
+                                </tr>
                             </thead>
                             <tbody>
 
@@ -59,26 +66,32 @@ window.onload = function() {
         responsive: true,
         ajax: '/',
         columns: [{
+                data: 'name',
                 name: 'Name',
                 sortable: false
             },
             {
+                data: 'email',
                 name: 'Email',
                 sortable: false
             },
             {
+                data: 'country',
                 name: 'Country',
                 sortable: false
             },
             {
+                data: 'subscribe_date',
                 name: 'Subscribe Date',
                 sortable: false
             },
             {
+                data: 'subscribe_time',
                 name: 'Subscribe Time',
                 sortable: false
             },
             {
+                data: 'action',
                 name: '',
                 sortable: false
             },

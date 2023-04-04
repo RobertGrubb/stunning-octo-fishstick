@@ -722,12 +722,12 @@ class SiteController extends Controller
              */
             foreach ($subscribers as $subscriber) {
                 $output[] = [
-                    $subscriber->name,
-                    '<a href="/edit/' . (string) $subscriber->id . '">' . $subscriber->email . '</a>',
-                    $subField($subscriber->fields, 'country'),
-                    date('d/m/Y', strtotime($subscriber->date_subscribe)),
-                    date('H:i:s', strtotime($subscriber->date_subscribe)),
-                    '<a href="javascript:void(0);" onclick="deleteSubscriber(\'' . (string) $subscriber->id . '\');" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>',
+                    'name' => $subscriber->name,
+                    'email' => '<a href="/edit/' . (string) $subscriber->id . '">' . $subscriber->email . '</a>',
+                    'country' => $subField($subscriber->fields, 'country'),
+                    'subscribe_date' => date('d/m/Y', strtotime($subscriber->date_subscribe)),
+                    'subscribe_time' => date('H:i:s', strtotime($subscriber->date_subscribe)),
+                    'action' => '<a href="javascript:void(0);" onclick="deleteSubscriber(\'' . (string) $subscriber->id . '\');" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>',
                 ];
             }
 
